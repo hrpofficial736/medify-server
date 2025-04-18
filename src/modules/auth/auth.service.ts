@@ -6,21 +6,19 @@ import { GoogleUserInterface } from 'src/common/interfaces/google-user.interface
 @Injectable()
 export class AuthService {
   constructor(private prismaService: PrismaService) {}
-  async loginWithEmail(email: string, role: string) {
+  async loginWithEmail(email: string) {
     try {
-      const existingUser =
-        role === 'patient'
-          ? await this.prismaService.patient.findUnique({
-              where: {
-                email,
-              },
-            })
-          : await this.prismaService.doctor.findUnique({
-              where: {
-                email,
-              },
-            });
-      if (!existingUser) {
+      const ifPatient = await this.prismaService.patient.findUnique({
+        where: {
+          email,
+        },
+      });
+      const ifDoctor = await this.prismaService.doctor.findUnique({
+        where: {
+          email,
+        },
+      });
+      if (!ifPatient && !ifDoctor) {
         return {
           statusCode: StatusCodes.NOT_FOUND,
           message: 'User not found!',
@@ -30,7 +28,7 @@ export class AuthService {
       return {
         statusCode: StatusCodes.OK,
         message: 'User authenticated successfully!',
-        data: existingUser
+        data: ifDoctor || ifPatient,
       };
     } catch (error) {
       return {
@@ -115,12 +113,14 @@ export class AuthService {
               data: {
                 email: googleUser.email,
                 name: googleUser.name,
+                imageUrl: googleUser.imageUrl
               },
             })
           : await this.prismaService.doctor.create({
               data: {
                 email: googleUser.email,
                 name: googleUser.name,
+                imageUrl: googleUser.imageUrl
               },
             });
 
