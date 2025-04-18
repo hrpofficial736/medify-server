@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 const Razorpay = require('razorpay');
 import { StatusCodes } from 'src/common/constants/status-codes';
-import { VerifyPaymentDto } from 'src/common/interfaces/payment-interfaces';
+import { VerifyPaymentDto } from '../../common/interfaces/payment-interfaces';
 import * as crypto from "crypto";
 
 @Injectable()
